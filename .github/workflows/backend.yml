@@ -1,0 +1,21 @@
+name: backend
+on: [push]
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    container: openjdk:17.0.1-slim
+    services:
+      postgres:
+        image: postgres:alpine
+        env:
+          POSTGRES_USER: 'sestra'
+          POSTGRES_PASSWORD: 'sestra'
+          POSTGRES_DB: 'sestra'
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./gradlew build
