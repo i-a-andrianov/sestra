@@ -8,6 +8,7 @@ services:
       SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/sestra'
       SPRING_DATASOURCE_USERNAME: 'sestra'
       SPRING_DATASOURCE_PASSWORD: 'sestra'
+      PASSWORD_ADMIN: 'sestra'
   postgres:
     image: 'postgres:alpine'
     environment:
