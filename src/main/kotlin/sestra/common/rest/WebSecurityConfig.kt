@@ -14,7 +14,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfig(
-    @Value("password.admin") private val adminPassword: String
+    @Value("\${password.admin}") private val adminPassword: String
 ) : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.authorizeRequests()
