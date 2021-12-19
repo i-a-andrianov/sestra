@@ -5,5 +5,5 @@ sealed interface LayerType
 object SpanLayerType : LayerType
 
 data class RelationLayerType(
-    val spanRoles: List<String>
+    val spanRoles: List<RelationLayerSpanRole>
 ) : LayerType

@@ -4,11 +4,12 @@ import sestra.common.api.ValidationError
 import sestra.projects.api.core.Attribute
 import sestra.projects.api.core.Layer
 import sestra.projects.api.core.RelationLayerType
+import sestra.projects.api.core.SpanLayerType
 
 class LayerValidator {
     private val attrValidator = AttributeValidator()
 
-    fun validate(layer: Layer): List<ValidationError> {
+    fun validate(layer: Layer, layersByName: Map<String, Layer>): List<ValidationError> {
         val result = mutableListOf<ValidationError>()
 
         if (layer.name.isBlank()) {
@@ -21,13 +22,15 @@ class LayerValidator {
             }
 
             layer.type.spanRoles.forEachIndexed { idx, role ->
-                if (role.isBlank()) {
-                    result += ValidationError("type.spanRoles[$idx]", "should not be blank")
-                }
+                result += validateSpanRole(
+                    "type.spanRoles[$idx]",
+                    role.name,
+                    layersByName[role.targetLayerName]
+                )
             }
 
             result += layer.type.spanRoles
-                .groupBy { it }
+                .groupBy { it.name }
                 .filter { e -> e.value.size > 1 }
                 .map { e -> ValidationError("type.spanRoles", "role '${e.key}' is duplicated") }
         }
@@ -40,6 +43,28 @@ class LayerValidator {
         result += layer.attrs.flatMapIndexed { idx, attr ->
             attrValidator.validate(attr)
                 .map { error -> error.copy(field = "attrs[$idx].${error.field}") }
+        }
+
+        return result
+    }
+
+    private fun validateSpanRole(fieldPrefix: String, name: String, targetLayer: Layer?): List<ValidationError> {
+        val result = mutableListOf<ValidationError>()
+
+        if (name.isBlank()) {
+            result += ValidationError("$fieldPrefix.name", "should not be blank")
+        }
+
+        if (targetLayer === null) {
+            result += ValidationError(
+                "$fieldPrefix.targetLayerName",
+                "should reference existing layer"
+            )
+        } else if (targetLayer.type !is SpanLayerType) {
+            result += ValidationError(
+                "$fieldPrefix.targetLayerName",
+                "should reference span layer"
+            )
         }
 
         return result

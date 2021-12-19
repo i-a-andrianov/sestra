@@ -13,6 +13,7 @@ import sestra.projects.api.core.EnumAttributeType
 import sestra.projects.api.core.IntAttributeType
 import sestra.projects.api.core.Layer
 import sestra.projects.api.core.Project
+import sestra.projects.api.core.RelationLayerSpanRole
 import sestra.projects.api.core.RelationLayerType
 import sestra.projects.api.core.SpanLayerType
 import java.util.stream.Stream
@@ -48,8 +49,18 @@ class ProjectValidatorTest {
                             Layer(
                                 name = "layer",
                                 type = RelationLayerType(
-                                    spanRoles = listOf("role")
+                                    spanRoles = listOf(
+                                        RelationLayerSpanRole(
+                                            name = "role",
+                                            targetLayerName = "layer2"
+                                        )
+                                    )
                                 ),
+                                attrs = emptyList()
+                            ),
+                            Layer(
+                                name = "layer2",
+                                type = SpanLayerType,
                                 attrs = emptyList()
                             )
                         )
@@ -110,10 +121,28 @@ class ProjectValidatorTest {
                         name = "project",
                         layers = listOf(
                             Layer(
-                                name = "layer",
+                                name = "layer1",
                                 type = RelationLayerType(
-                                    spanRoles = listOf("role1", "role2", "role1")
+                                    spanRoles = listOf(
+                                        RelationLayerSpanRole(
+                                            name = "role1",
+                                            targetLayerName = "layer2"
+                                        ),
+                                        RelationLayerSpanRole(
+                                            name = "role2",
+                                            targetLayerName = "layer2"
+                                        ),
+                                        RelationLayerSpanRole(
+                                            name = "role1",
+                                            targetLayerName = "layer2"
+                                        )
+                                    )
                                 ),
+                                attrs = emptyList()
+                            ),
+                            Layer(
+                                name = "layer2",
+                                type = SpanLayerType,
                                 attrs = emptyList()
                             )
                         )
@@ -170,12 +199,50 @@ class ProjectValidatorTest {
 
                 Arguments.of(
                     Project(
+                        name = "project",
+                        layers = listOf(
+                            Layer(
+                                name = "layer",
+                                type = RelationLayerType(
+                                    spanRoles = listOf(
+                                        RelationLayerSpanRole(
+                                            name = "role1",
+                                            targetLayerName = "layer2"
+                                        ),
+                                        RelationLayerSpanRole(
+                                            name = "role2",
+                                            targetLayerName = "layer"
+                                        )
+                                    )
+                                ),
+                                attrs = emptyList()
+                            )
+                        )
+                    ),
+                    setOf(
+                        "layers[0].type.spanRoles[0].targetLayerName",
+                        "layers[0].type.spanRoles[1].targetLayerName"
+                    ),
+                    "reject roles with non-existent or non-span target layers"
+                ),
+
+                Arguments.of(
+                    Project(
                         name = "  ",
                         layers = listOf(
                             Layer(
                                 name = "",
                                 type = RelationLayerType(
-                                    spanRoles = listOf("role", "")
+                                    spanRoles = listOf(
+                                        RelationLayerSpanRole(
+                                            name = "role",
+                                            targetLayerName = "layer"
+                                        ),
+                                        RelationLayerSpanRole(
+                                            name = "",
+                                            targetLayerName = "layer"
+                                        )
+                                    )
                                 ),
                                 attrs = listOf(
                                     Attribute(
@@ -185,13 +252,18 @@ class ProjectValidatorTest {
                                         )
                                     )
                                 )
+                            ),
+                            Layer(
+                                name = "layer",
+                                type = SpanLayerType,
+                                attrs = emptyList()
                             )
                         )
                     ),
                     setOf(
                         "name",
                         "layers[0].name",
-                        "layers[0].type.spanRoles[1]",
+                        "layers[0].type.spanRoles[1].name",
                         "layers[0].attrs[0].name",
                         "layers[0].attrs[0].type.values[0]"
                     ),
@@ -203,9 +275,18 @@ class ProjectValidatorTest {
                         name = "project",
                         layers = listOf(
                             Layer(
-                                name = "layer",
+                                name = "layer1",
                                 type = RelationLayerType(
-                                    spanRoles = listOf("role1", "role2")
+                                    spanRoles = listOf(
+                                        RelationLayerSpanRole(
+                                            name = "role1",
+                                            targetLayerName = "layer2"
+                                        ),
+                                        RelationLayerSpanRole(
+                                            name = "role2",
+                                            targetLayerName = "layer2"
+                                        )
+                                    )
                                 ),
                                 attrs = listOf(
                                     Attribute(
@@ -215,6 +296,11 @@ class ProjectValidatorTest {
                                         )
                                     )
                                 )
+                            ),
+                            Layer(
+                                name = "layer2",
+                                type = SpanLayerType,
+                                attrs = emptyList()
                             )
                         )
                     ),

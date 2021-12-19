@@ -24,7 +24,7 @@ class ProjectValidator {
             .map { e -> ValidationError("layers", "value '${e.key}' is duplicated") }
 
         result += project.layers.flatMapIndexed { idx, layer ->
-            layerValidator.validate(layer)
+            layerValidator.validate(layer, project.layers.associateBy(Layer::name))
                 .map { error -> error.copy(field = "layers[$idx].${error.field}") }
         }
 
