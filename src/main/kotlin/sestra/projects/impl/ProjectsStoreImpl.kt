@@ -3,10 +3,11 @@ package sestra.projects.impl
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sestra.projects.api.core.Project
-import sestra.projects.api.store.CreateAlreadyExistsError
-import sestra.projects.api.store.CreateInvalidProjectError
-import sestra.projects.api.store.CreateResult
-import sestra.projects.api.store.CreateSuccess
+import sestra.projects.api.store.CreateProjectResult
+import sestra.projects.api.store.GetProjectsNamesResult
+import sestra.projects.api.store.InvalidProject
+import sestra.projects.api.store.ProjectAlreadyExists
+import sestra.projects.api.store.ProjectCreated
 import sestra.projects.api.store.ProjectsStore
 import sestra.projects.impl.mapper.FromEntityMapper
 import sestra.projects.impl.mapper.ToEntityMapper
@@ -22,19 +23,19 @@ class ProjectsStoreImpl(
     private val fromEntityMapper = FromEntityMapper()
 
     @Transactional
-    override fun create(whoami: String, project: Project): CreateResult {
+    override fun create(whoami: String, project: Project): CreateProjectResult {
         val errors = validator.validate(project)
         if (errors.isNotEmpty()) {
-            return CreateInvalidProjectError(errors)
+            return InvalidProject(errors)
         }
 
         if (repository.existsByName(project.name)) {
-            return CreateAlreadyExistsError
+            return ProjectAlreadyExists
         }
 
         val entity = toEntityMapper.toEntity(project, whoami)
         repository.save(entity)
-        return CreateSuccess
+        return ProjectCreated
     }
 
     @Transactional(readOnly = true)
@@ -44,9 +45,10 @@ class ProjectsStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getNames(whoami: String): List<String> {
+    override fun getNames(whoami: String): GetProjectsNamesResult {
         // TODO load just names
         val entities = repository.findAll()
-        return entities.map { it.name!! }
+        val names = entities.map { it.name!! }
+        return GetProjectsNamesResult(names)
     }
 }

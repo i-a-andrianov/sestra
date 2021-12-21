@@ -25,9 +25,10 @@ import sestra.projects.api.core.RelationLayerSpanRole
 import sestra.projects.api.core.RelationLayerType
 import sestra.projects.api.core.SpanLayerType
 import sestra.projects.api.core.StringAttributeType
-import sestra.projects.api.store.CreateAlreadyExistsError
-import sestra.projects.api.store.CreateInvalidProjectError
-import sestra.projects.api.store.CreateSuccess
+import sestra.projects.api.store.GetProjectsNamesResult
+import sestra.projects.api.store.InvalidProject
+import sestra.projects.api.store.ProjectAlreadyExists
+import sestra.projects.api.store.ProjectCreated
 import java.util.stream.Stream
 
 @DataJpaTest
@@ -40,7 +41,7 @@ class ProjectsStoreImplTest {
     @Test
     fun `should return nothing on empty database`() {
         assertEquals(
-            emptyList<String>(),
+            GetProjectsNamesResult(emptyList()),
             store.getNames("admin")
         )
         assertNull(
@@ -55,10 +56,10 @@ class ProjectsStoreImplTest {
         val result = store.create("admin", project)
 
         assertTrue(
-            result is CreateSuccess
+            result is ProjectCreated
         )
         assertEquals(
-            listOf(project.name),
+            GetProjectsNamesResult(listOf(project.name)),
             store.getNames("admin")
         )
         assertEquals(
@@ -158,10 +159,10 @@ class ProjectsStoreImplTest {
         val result = store.create("admin", project)
 
         assertTrue(
-            result is CreateInvalidProjectError
+            result is InvalidProject
         )
 
-        val errors = (result as CreateInvalidProjectError).errors
+        val errors = (result as InvalidProject).errors
 
         assertEquals(
             setOf("name", "layers"),
@@ -169,7 +170,7 @@ class ProjectsStoreImplTest {
         )
 
         assertEquals(
-            emptyList<String>(),
+            GetProjectsNamesResult(emptyList()),
             store.getNames("admin")
         )
         assertNull(
@@ -192,10 +193,10 @@ class ProjectsStoreImplTest {
         val result1 = store.create("admin", project1)
 
         assertTrue(
-            result1 is CreateSuccess
+            result1 is ProjectCreated
         )
         assertEquals(
-            listOf(project1.name),
+            GetProjectsNamesResult(listOf(project1.name)),
             store.getNames("admin")
         )
         assertEquals(
@@ -216,10 +217,10 @@ class ProjectsStoreImplTest {
         val result2 = store.create("admin", project2)
 
         assertTrue(
-            result2 is CreateAlreadyExistsError
+            result2 is ProjectAlreadyExists
         )
         assertEquals(
-            listOf(project1.name),
+            GetProjectsNamesResult(listOf(project1.name)),
             store.getNames("admin")
         )
         assertEquals(

@@ -24,9 +24,10 @@ import sestra.projects.api.core.RelationLayerSpanRole
 import sestra.projects.api.core.RelationLayerType
 import sestra.projects.api.core.SpanLayerType
 import sestra.projects.api.core.StringAttributeType
-import sestra.projects.api.store.CreateAlreadyExistsError
-import sestra.projects.api.store.CreateInvalidProjectError
-import sestra.projects.api.store.CreateSuccess
+import sestra.projects.api.store.GetProjectsNamesResult
+import sestra.projects.api.store.InvalidProject
+import sestra.projects.api.store.ProjectAlreadyExists
+import sestra.projects.api.store.ProjectCreated
 import sestra.projects.api.store.ProjectsStore
 import sestra.projects.rest.serde.JacksonCustomizer
 
@@ -215,7 +216,7 @@ class ProjectsStoreRestControllerTest {
             )
             Mockito.`when`(store.create("admin", project))
                 .thenReturn(
-                    CreateInvalidProjectError(
+                    InvalidProject(
                         errors = listOf(
                             ValidationError("layers", "should not be empty")
                         )
@@ -257,7 +258,7 @@ class ProjectsStoreRestControllerTest {
         @Test
         fun `should return 400 for project which already exists`() {
             Mockito.`when`(store.create("admin", project))
-                .thenReturn(CreateAlreadyExistsError)
+                .thenReturn(ProjectAlreadyExists)
 
             client.post("/api/projects") {
                 accept = MediaType.APPLICATION_JSON
@@ -274,7 +275,7 @@ class ProjectsStoreRestControllerTest {
         @Test
         fun `should return 200 for correct project`() {
             Mockito.`when`(store.create("admin", project))
-                .thenReturn(CreateSuccess)
+                .thenReturn(ProjectCreated)
 
             client.post("/api/projects") {
                 accept = MediaType.APPLICATION_JSON
@@ -385,7 +386,7 @@ class ProjectsStoreRestControllerTest {
         @Test
         fun `should return 200 and provide given projects names in JSON`() {
             Mockito.`when`(store.getNames("admin"))
-                .thenReturn(listOf("project1", "project2"))
+                .thenReturn(GetProjectsNamesResult(listOf("project1", "project2")))
 
             client.get("/api/projects/names") {
                 accept = MediaType.APPLICATION_JSON

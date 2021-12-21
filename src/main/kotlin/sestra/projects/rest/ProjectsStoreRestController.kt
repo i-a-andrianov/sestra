@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import sestra.projects.api.core.Project
-import sestra.projects.api.store.CreateAlreadyExistsError
-import sestra.projects.api.store.CreateInvalidProjectError
-import sestra.projects.api.store.CreateSuccess
+import sestra.projects.api.store.InvalidProject
+import sestra.projects.api.store.ProjectAlreadyExists
+import sestra.projects.api.store.ProjectCreated
 import sestra.projects.api.store.ProjectsStore
 import java.security.Principal
 
@@ -24,9 +24,9 @@ class ProjectsStoreRestController(
         val result = store.create(principal.name, project)
 
         return when (result) {
-            CreateSuccess -> ResponseEntity.ok().body(emptyMap<Any, Any>())
-            is CreateInvalidProjectError -> ResponseEntity.badRequest().body(result)
-            CreateAlreadyExistsError -> ResponseEntity.badRequest()
+            ProjectCreated -> ResponseEntity.ok().body(emptyMap<Any, Any>())
+            is InvalidProject -> ResponseEntity.badRequest().body(result)
+            ProjectAlreadyExists -> ResponseEntity.badRequest()
                 .body(mapOf("description" to "Project with same name already exists"))
         }
     }
@@ -35,16 +35,16 @@ class ProjectsStoreRestController(
     fun getByName(principal: Principal, @RequestParam name: String): ResponseEntity<Any> {
         val project = store.getByName(principal.name, name)
 
-        if (project === null) {
-            return ResponseEntity.notFound().build()
+        return when (project) {
+            null -> ResponseEntity.notFound().build()
+            else -> ResponseEntity.ok().body(project)
         }
-        return ResponseEntity.ok().body(project)
     }
 
     @GetMapping("/names")
     fun getNames(principal: Principal): ResponseEntity<Any> {
-        val names = store.getNames(principal.name)
+        val result = store.getNames(principal.name)
 
-        return ResponseEntity.ok().body(mapOf("names" to names))
+        return ResponseEntity.ok().body(result)
     }
 }
