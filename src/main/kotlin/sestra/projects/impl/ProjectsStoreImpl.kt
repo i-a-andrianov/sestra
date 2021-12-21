@@ -46,9 +46,7 @@ class ProjectsStoreImpl(
 
     @Transactional(readOnly = true)
     override fun getNames(whoami: String): GetProjectsNamesResult {
-        // TODO load just names
-        val entities = repository.findAll()
-        val names = entities.map { it.name!! }
+        val names = repository.findNamesBy().map { it.name }
         return GetProjectsNamesResult(names)
     }
 }
