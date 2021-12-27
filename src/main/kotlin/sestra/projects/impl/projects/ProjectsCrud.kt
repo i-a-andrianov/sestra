@@ -1,5 +1,6 @@
 package sestra.projects.impl.projects
 
+import sestra.projects.api.layers.Layer
 import sestra.projects.api.projects.CreateProjectResult
 import sestra.projects.api.projects.GetProjectsNamesResult
 import sestra.projects.api.projects.InvalidProject
@@ -8,11 +9,13 @@ import sestra.projects.api.projects.ProjectAlreadyExists
 import sestra.projects.api.projects.ProjectCreated
 import sestra.projects.impl.projects.mapper.ProjectFromEntityMapper
 import sestra.projects.impl.projects.mapper.ProjectToEntityMapper
+import sestra.projects.impl.projects.repository.LayersRepository
 import sestra.projects.impl.projects.repository.ProjectsRepository
 import sestra.projects.impl.projects.validator.ProjectValidator
 
 class ProjectsCrud(
-    private val repo: ProjectsRepository
+    private val repo: ProjectsRepository,
+    private val layersRepo: LayersRepository
 ) {
     private val validator = ProjectValidator()
     private val toMapper = ProjectToEntityMapper()
@@ -31,6 +34,18 @@ class ProjectsCrud(
         val entity = toMapper.toEntity(project, createdBy)
         repo.save(entity)
         return ProjectCreated
+    }
+
+    fun getLayerIdByName(projectName: String, name: String): Int? {
+        return layersRepo.findIdByProjectNameAndName(projectName, name)?.id
+    }
+
+    fun getLayerWithIdByName(projectName: String, name: String): Pair<Int, Layer>? {
+        val entity = layersRepo.findByProjectNameAndName(projectName, name)
+        if (entity === null) {
+            return null
+        }
+        return Pair(entity.id!!, fromMapper.fromEntity(entity))
     }
 
     fun getIdByName(name: String): Int? {

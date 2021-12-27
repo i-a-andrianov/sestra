@@ -27,7 +27,7 @@ class ProjectFromEntityMapper {
         )
     }
 
-    private fun fromEntity(layer: LayerEntity): Layer {
+    fun fromEntity(layer: LayerEntity): Layer {
         return Layer(
             name = layer.name!!,
             type = when (layer.type) {

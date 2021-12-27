@@ -33,6 +33,18 @@ class DocumentsCrud(
         return DocumentCreated
     }
 
+    fun getWithIdByName(projectId: Int, name: String): Pair<Int, Document>? {
+        val entity = repo.findByProjectIdAndName(projectId, name)
+        if (entity === null) {
+            return null
+        }
+        return Pair(entity.id!!, fromMapper.fromEntity(entity))
+    }
+
+    fun getIdByName(projectId: Int, name: String): Int? {
+        return repo.findIdByProjectIdAndName(projectId, name)?.id
+    }
+
     fun getByName(projectId: Int, name: String): Document? {
         val entity = repo.findByProjectIdAndName(projectId, name)
 
