@@ -2,24 +2,24 @@ package sestra.projects.api.annotations
 
 sealed interface AttributeValue {
     val value: Any
+
+    data class Boolean(
+        override val value: kotlin.Boolean
+    ) : AttributeValue
+
+    data class Int(
+        override val value: kotlin.Int
+    ) : AttributeValue
+
+    data class Float(
+        override val value: kotlin.Float
+    ) : AttributeValue
+
+    data class String(
+        override val value: kotlin.String
+    ) : AttributeValue
+
+    data class Enum(
+        override val value: kotlin.String
+    ) : AttributeValue
 }
-
-data class BooleanAttributeValue(
-    override val value: Boolean
-) : AttributeValue
-
-data class IntAttributeValue(
-    override val value: Int
-) : AttributeValue
-
-data class FloatAttributeValue(
-    override val value: Float
-) : AttributeValue
-
-data class StringAttributeValue(
-    override val value: String
-) : AttributeValue
-
-data class EnumAttributeValue(
-    override val value: String
-) : AttributeValue

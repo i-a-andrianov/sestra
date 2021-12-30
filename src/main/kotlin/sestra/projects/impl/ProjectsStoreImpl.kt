@@ -7,8 +7,6 @@ import sestra.projects.api.annotations.AnnotationContainer
 import sestra.projects.api.annotations.AnnotationsStore
 import sestra.projects.api.annotations.CreateAnnotationResult
 import sestra.projects.api.annotations.DeleteAnnotationResult
-import sestra.projects.api.annotations.DocumentNotFound
-import sestra.projects.api.annotations.LayerNotFound
 import sestra.projects.api.documents.CreateDocumentResult
 import sestra.projects.api.documents.Document
 import sestra.projects.api.documents.DocumentContainer
@@ -27,8 +25,6 @@ import sestra.projects.impl.projects.ProjectsCrud
 import sestra.projects.impl.projects.repository.LayersRepository
 import sestra.projects.impl.projects.repository.ProjectsRepository
 import java.util.UUID
-import sestra.projects.api.annotations.ProjectNotFound as AnnProjectNotFound
-import sestra.projects.api.documents.ProjectNotFound as DocProjectNotFound
 
 @Component
 class ProjectsStoreImpl(
@@ -65,7 +61,7 @@ class ProjectsStoreImpl(
     ): CreateDocumentResult {
         val projectId = projectsCrud.getIdByName(container.projectName)
         if (projectId === null) {
-            return DocProjectNotFound
+            return CreateDocumentResult.ProjectNotFound
         }
         return documentsCrud.create(document, projectId, whoami)
     }
@@ -96,15 +92,15 @@ class ProjectsStoreImpl(
     ): CreateAnnotationResult {
         val projectId = projectsCrud.getIdByName(container.projectName)
         if (projectId === null) {
-            return AnnProjectNotFound
+            return CreateAnnotationResult.ProjectNotFound
         }
         val documentWithId = documentsCrud.getWithIdByName(projectId, container.documentName)
         if (documentWithId === null) {
-            return DocumentNotFound
+            return CreateAnnotationResult.DocumentNotFound
         }
         val layerWithId = projectsCrud.getLayerWithIdByName(container.projectName, container.layerName)
         if (layerWithId === null) {
-            return LayerNotFound
+            return CreateAnnotationResult.LayerNotFound
         }
         val (layerId, layer) = layerWithId
         val (documentId, document) = documentWithId

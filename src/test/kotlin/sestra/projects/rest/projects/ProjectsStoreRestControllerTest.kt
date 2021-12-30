@@ -14,20 +14,13 @@ import org.springframework.test.web.servlet.post
 import sestra.common.api.ValidationError
 import sestra.common.rest.WebSecurityConfig
 import sestra.projects.api.layers.Attribute
-import sestra.projects.api.layers.BooleanAttributeType
-import sestra.projects.api.layers.EnumAttributeType
-import sestra.projects.api.layers.FloatAttributeType
-import sestra.projects.api.layers.IntAttributeType
+import sestra.projects.api.layers.AttributeType
 import sestra.projects.api.layers.Layer
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
-import sestra.projects.api.layers.StringAttributeType
+import sestra.projects.api.projects.CreateProjectResult
 import sestra.projects.api.projects.GetProjectsNamesResult
-import sestra.projects.api.projects.InvalidProject
 import sestra.projects.api.projects.Project
-import sestra.projects.api.projects.ProjectAlreadyExists
-import sestra.projects.api.projects.ProjectCreated
 import sestra.projects.api.projects.ProjectsStore
 import sestra.projects.rest.projects.serde.JacksonCustomizer
 
@@ -45,7 +38,7 @@ class ProjectsStoreRestControllerTest {
         layers = listOf(
             Layer(
                 name = "rel",
-                type = RelationLayerType(
+                type = LayerType.Relation(
                     spanRoles = listOf(
                         RelationLayerSpanRole(
                             name = "role1",
@@ -60,35 +53,35 @@ class ProjectsStoreRestControllerTest {
                 attrs = listOf(
                     Attribute(
                         name = "attr1",
-                        type = BooleanAttributeType
+                        type = AttributeType.Boolean
                     ),
                     Attribute(
                         name = "attr2",
-                        type = IntAttributeType
+                        type = AttributeType.Int
                     ),
                     Attribute(
                         name = "attr3",
-                        type = FloatAttributeType
+                        type = AttributeType.Float
                     )
                 )
             ),
             Layer(
                 name = "span",
-                type = SpanLayerType,
+                type = LayerType.Span,
                 attrs = listOf(
                     Attribute(
                         name = "attr1",
-                        type = StringAttributeType
+                        type = AttributeType.String
                     ),
                     Attribute(
                         name = "attr2",
-                        type = EnumAttributeType(
+                        type = AttributeType.Enum(
                             values = listOf("value1", "value2", "value3")
                         )
                     ),
                     Attribute(
                         name = "attr3",
-                        type = BooleanAttributeType
+                        type = AttributeType.Boolean
                     )
                 )
             )
@@ -216,7 +209,7 @@ class ProjectsStoreRestControllerTest {
             )
             Mockito.`when`(store.createProject("admin", project))
                 .thenReturn(
-                    InvalidProject(
+                    CreateProjectResult.InvalidProject(
                         errors = listOf(
                             ValidationError("layers", "should not be empty")
                         )
@@ -258,7 +251,7 @@ class ProjectsStoreRestControllerTest {
         @Test
         fun `should return 400 for project which already exists`() {
             Mockito.`when`(store.createProject("admin", project))
-                .thenReturn(ProjectAlreadyExists)
+                .thenReturn(CreateProjectResult.ProjectAlreadyExists)
 
             client.post("/api/projects") {
                 accept = MediaType.APPLICATION_JSON
@@ -275,7 +268,7 @@ class ProjectsStoreRestControllerTest {
         @Test
         fun `should return 200 for correct project`() {
             Mockito.`when`(store.createProject("admin", project))
-                .thenReturn(ProjectCreated)
+                .thenReturn(CreateProjectResult.ProjectCreated)
 
             client.post("/api/projects") {
                 accept = MediaType.APPLICATION_JSON

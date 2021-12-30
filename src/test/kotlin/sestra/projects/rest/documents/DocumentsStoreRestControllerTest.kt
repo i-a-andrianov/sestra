@@ -13,13 +13,11 @@ import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import sestra.common.api.ValidationError
 import sestra.common.rest.WebSecurityConfig
+import sestra.projects.api.documents.CreateDocumentResult
 import sestra.projects.api.documents.Document
-import sestra.projects.api.documents.DocumentAlreadyExists
 import sestra.projects.api.documents.DocumentContainer
-import sestra.projects.api.documents.DocumentCreated
 import sestra.projects.api.documents.DocumentsStore
 import sestra.projects.api.documents.GetDocumentsNamesResult
-import sestra.projects.api.documents.InvalidDocument
 
 @WebMvcTest(controllers = [DocumentsStoreRestController::class])
 @Import(WebSecurityConfig::class)
@@ -106,7 +104,7 @@ class DocumentsStoreRestControllerTest {
             )
             Mockito.`when`(store.createDocument("admin", container, document))
                 .thenReturn(
-                    InvalidDocument(
+                    CreateDocumentResult.InvalidDocument(
                         errors = listOf(
                             ValidationError("text", "should not be blank")
                         )
@@ -148,7 +146,7 @@ class DocumentsStoreRestControllerTest {
         @Test
         fun `should return 400 for document which already exists`() {
             Mockito.`when`(store.createDocument("admin", container, document))
-                .thenReturn(DocumentAlreadyExists)
+                .thenReturn(CreateDocumentResult.DocumentAlreadyExists)
 
             client.post("/api/projects/documents?projectName=project1") {
                 accept = MediaType.APPLICATION_JSON
@@ -165,7 +163,7 @@ class DocumentsStoreRestControllerTest {
         @Test
         fun `should return 200 for correct document`() {
             Mockito.`when`(store.createDocument("admin", container, document))
-                .thenReturn(DocumentCreated)
+                .thenReturn(CreateDocumentResult.DocumentCreated)
 
             client.post("/api/projects/documents?projectName=project1") {
                 accept = MediaType.APPLICATION_JSON

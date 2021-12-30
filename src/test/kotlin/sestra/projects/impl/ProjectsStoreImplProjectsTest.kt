@@ -15,20 +15,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 import sestra.common.api.ValidationError
 import sestra.projects.api.layers.Attribute
-import sestra.projects.api.layers.BooleanAttributeType
-import sestra.projects.api.layers.EnumAttributeType
-import sestra.projects.api.layers.FloatAttributeType
-import sestra.projects.api.layers.IntAttributeType
+import sestra.projects.api.layers.AttributeType
 import sestra.projects.api.layers.Layer
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
-import sestra.projects.api.layers.StringAttributeType
+import sestra.projects.api.projects.CreateProjectResult
 import sestra.projects.api.projects.GetProjectsNamesResult
-import sestra.projects.api.projects.InvalidProject
 import sestra.projects.api.projects.Project
-import sestra.projects.api.projects.ProjectAlreadyExists
-import sestra.projects.api.projects.ProjectCreated
 import java.util.stream.Stream
 
 @DataJpaTest
@@ -57,7 +50,7 @@ class ProjectsStoreImplProjectsTest {
     fun `created project should become visible with the same data`(project: Project, testCase: String) {
         val result = store.createProject(whoami, project)
 
-        assertEquals(ProjectCreated, result)
+        assertEquals(CreateProjectResult.ProjectCreated, result)
         assertEquals(
             GetProjectsNamesResult(listOf(project.name)),
             store.getProjectNames(whoami)
@@ -77,37 +70,37 @@ class ProjectsStoreImplProjectsTest {
                         layers = listOf(
                             Layer(
                                 name = "layer 1",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = listOf(
                                     Attribute(
                                         name = "attr 1",
-                                        type = BooleanAttributeType
+                                        type = AttributeType.Boolean
                                     ),
                                     Attribute(
                                         name = "attr 2",
-                                        type = IntAttributeType
+                                        type = AttributeType.Int
                                     ),
                                     Attribute(
                                         name = "attr 3",
-                                        type = FloatAttributeType
+                                        type = AttributeType.Float
                                     )
                                 )
                             ),
                             Layer(
                                 name = "layer 2",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = listOf(
                                     Attribute(
                                         name = "attr 1",
-                                        type = IntAttributeType
+                                        type = AttributeType.Int
                                     ),
                                     Attribute(
                                         name = "attr 2",
-                                        type = StringAttributeType
+                                        type = AttributeType.String
                                     ),
                                     Attribute(
                                         name = "attr 3",
-                                        type = EnumAttributeType(
+                                        type = AttributeType.Enum(
                                             values = listOf("value 1", "value 2", "value 3")
                                         )
                                     )
@@ -123,12 +116,12 @@ class ProjectsStoreImplProjectsTest {
                         layers = listOf(
                             Layer(
                                 name = "layer 1",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = emptyList()
                             ),
                             Layer(
                                 name = "layer 2",
-                                type = RelationLayerType(
+                                type = LayerType.Relation(
                                     spanRoles = listOf(
                                         RelationLayerSpanRole(
                                             name = "role 1",
@@ -159,10 +152,10 @@ class ProjectsStoreImplProjectsTest {
         val result = store.createProject(whoami, project)
 
         assertTrue(
-            result is InvalidProject
+            result is CreateProjectResult.InvalidProject
         )
 
-        val errors = (result as InvalidProject).errors
+        val errors = (result as CreateProjectResult.InvalidProject).errors
 
         assertEquals(
             setOf("name", "layers"),
@@ -182,7 +175,7 @@ class ProjectsStoreImplProjectsTest {
     fun `create should return already exists error for duplicated project name`() {
         val result1 = store.createProject(whoami, project1)
 
-        assertEquals(ProjectCreated, result1)
+        assertEquals(CreateProjectResult.ProjectCreated, result1)
         assertEquals(
             GetProjectsNamesResult(listOf(project1.name)),
             store.getProjectNames(whoami)
@@ -194,7 +187,7 @@ class ProjectsStoreImplProjectsTest {
 
         val result2 = store.createProject(whoami, project2)
 
-        assertEquals(ProjectAlreadyExists, result2)
+        assertEquals(CreateProjectResult.ProjectAlreadyExists, result2)
         assertEquals(
             GetProjectsNamesResult(listOf(project1.name)),
             store.getProjectNames(whoami)
@@ -210,7 +203,7 @@ class ProjectsStoreImplProjectsTest {
         layers = listOf(
             Layer(
                 name = "layer1",
-                type = SpanLayerType,
+                type = LayerType.Span,
                 attrs = emptyList()
             )
         )
@@ -221,7 +214,7 @@ class ProjectsStoreImplProjectsTest {
         layers = listOf(
             Layer(
                 name = "layer2",
-                type = SpanLayerType,
+                type = LayerType.Span,
                 attrs = emptyList()
             )
         )

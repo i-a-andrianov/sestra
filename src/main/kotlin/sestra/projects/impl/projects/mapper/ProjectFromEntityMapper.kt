@@ -1,15 +1,10 @@
 package sestra.projects.impl.projects.mapper
 
 import sestra.projects.api.layers.Attribute
-import sestra.projects.api.layers.BooleanAttributeType
-import sestra.projects.api.layers.EnumAttributeType
-import sestra.projects.api.layers.FloatAttributeType
-import sestra.projects.api.layers.IntAttributeType
+import sestra.projects.api.layers.AttributeType
 import sestra.projects.api.layers.Layer
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
-import sestra.projects.api.layers.StringAttributeType
 import sestra.projects.api.projects.Project
 import sestra.projects.impl.projects.entities.AttributeEntity
 import sestra.projects.impl.projects.entities.EnumAttributeValueEntity
@@ -31,8 +26,8 @@ class ProjectFromEntityMapper {
         return Layer(
             name = layer.name!!,
             type = when (layer.type) {
-                "span" -> SpanLayerType
-                "relation" -> RelationLayerType(
+                "span" -> LayerType.Span
+                "relation" -> LayerType.Relation(
                     spanRoles = layer.relationSpanRoles!!
                         .sortedBy(RelationLayerSpanRoleEntity::inLayerIndex)
                         .map { spanRole ->
@@ -54,11 +49,11 @@ class ProjectFromEntityMapper {
         return Attribute(
             name = attr.name!!,
             type = when (attr.type) {
-                "boolean" -> BooleanAttributeType
-                "int" -> IntAttributeType
-                "float" -> FloatAttributeType
-                "string" -> StringAttributeType
-                "enum" -> EnumAttributeType(
+                "boolean" -> AttributeType.Boolean
+                "int" -> AttributeType.Int
+                "float" -> AttributeType.Float
+                "string" -> AttributeType.String
+                "enum" -> AttributeType.Enum(
                     values = attr.enumValues!!
                         .sortedBy(EnumAttributeValueEntity::inAttributeIndex)
                         .map { value -> value.name!! }

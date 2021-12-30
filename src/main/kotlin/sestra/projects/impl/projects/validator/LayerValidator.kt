@@ -3,8 +3,7 @@ package sestra.projects.impl.projects.validator
 import sestra.common.api.ValidationError
 import sestra.projects.api.layers.Attribute
 import sestra.projects.api.layers.Layer
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
+import sestra.projects.api.layers.LayerType
 
 class LayerValidator {
     private val attrValidator = AttributeValidator()
@@ -16,7 +15,7 @@ class LayerValidator {
             result += ValidationError("name", "should not be blank")
         }
 
-        if (layer.type is RelationLayerType) {
+        if (layer.type is LayerType.Relation) {
             if (layer.type.spanRoles.size < 2) {
                 result += ValidationError("type.spanRoles", "should have at least 2")
             }
@@ -60,7 +59,7 @@ class LayerValidator {
                 "$fieldPrefix.targetLayerName",
                 "should reference existing layer"
             )
-        } else if (targetLayer.type !is SpanLayerType) {
+        } else if (targetLayer.type !is LayerType.Span) {
             result += ValidationError(
                 "$fieldPrefix.targetLayerName",
                 "should reference span layer"

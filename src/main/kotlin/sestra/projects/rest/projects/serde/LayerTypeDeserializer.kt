@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
 
 class LayerTypeDeserializer : StdDeserializer<LayerType>(LayerType::class.java) {
     @Suppress("UNCHECKED_CAST")
@@ -15,8 +13,8 @@ class LayerTypeDeserializer : StdDeserializer<LayerType>(LayerType::class.java) 
 
         val name = data["name"] as String
         return when (name) {
-            "span" -> SpanLayerType
-            "relation" -> RelationLayerType(
+            "span" -> LayerType.Span
+            "relation" -> LayerType.Relation(
                 spanRoles = (data["spanRoles"] as List<Map<String, String>>).map { role ->
                     RelationLayerSpanRole(
                         name = role["name"]!!,

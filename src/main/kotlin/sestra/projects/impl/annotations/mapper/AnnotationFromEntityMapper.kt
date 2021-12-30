@@ -2,14 +2,9 @@ package sestra.projects.impl.annotations.mapper
 
 import sestra.projects.api.annotations.Annotation
 import sestra.projects.api.annotations.AnnotationAttribute
-import sestra.projects.api.annotations.BooleanAttributeValue
-import sestra.projects.api.annotations.EnumAttributeValue
-import sestra.projects.api.annotations.FloatAttributeValue
-import sestra.projects.api.annotations.IntAttributeValue
+import sestra.projects.api.annotations.AnnotationValue
+import sestra.projects.api.annotations.AttributeValue
 import sestra.projects.api.annotations.RelationAnnotationSpanRole
-import sestra.projects.api.annotations.RelationAnnotationValue
-import sestra.projects.api.annotations.SpanAnnotationValue
-import sestra.projects.api.annotations.StringAttributeValue
 import sestra.projects.impl.annotations.entities.AnnotationAttributeEntity
 import sestra.projects.impl.annotations.entities.AnnotationEntity
 import sestra.projects.impl.annotations.entities.RelationAnnotationSpanRoleEntity
@@ -19,8 +14,8 @@ class AnnotationFromEntityMapper {
         return Annotation(
             id = annotation.uuid!!,
             value = when (annotation.type) {
-                "span" -> SpanAnnotationValue(annotation.spanStart!!, annotation.spanEnd!!)
-                "relation" -> RelationAnnotationValue(
+                "span" -> AnnotationValue.Span(annotation.spanStart!!, annotation.spanEnd!!)
+                "relation" -> AnnotationValue.Relation(
                     spanRoles = annotation.relationSpanRoles!!
                         .sortedBy(RelationAnnotationSpanRoleEntity::inAnnotationIndex)
                         .map(this::fromEntity)
@@ -44,11 +39,11 @@ class AnnotationFromEntityMapper {
         return AnnotationAttribute(
             name = attr.name!!,
             value = when (attr.type) {
-                "boolean" -> BooleanAttributeValue(attr.booleanValue!!)
-                "int" -> IntAttributeValue(attr.intValue!!)
-                "float" -> FloatAttributeValue(attr.floatValue!!)
-                "string" -> StringAttributeValue(attr.stringValue!!)
-                "enum" -> EnumAttributeValue(attr.enumValue!!)
+                "boolean" -> AttributeValue.Boolean(attr.booleanValue!!)
+                "int" -> AttributeValue.Int(attr.intValue!!)
+                "float" -> AttributeValue.Float(attr.floatValue!!)
+                "string" -> AttributeValue.String(attr.stringValue!!)
+                "enum" -> AttributeValue.Enum(attr.enumValue!!)
                 else -> throw IllegalStateException("Unknown annotation attribute type '${attr.type}'")
             }
         )

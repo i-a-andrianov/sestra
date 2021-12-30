@@ -2,10 +2,7 @@ package sestra.projects.impl.documents
 
 import sestra.projects.api.documents.CreateDocumentResult
 import sestra.projects.api.documents.Document
-import sestra.projects.api.documents.DocumentAlreadyExists
-import sestra.projects.api.documents.DocumentCreated
 import sestra.projects.api.documents.GetDocumentsNamesResult
-import sestra.projects.api.documents.InvalidDocument
 import sestra.projects.impl.documents.mapper.DocumentFromEntityMapper
 import sestra.projects.impl.documents.mapper.DocumentToEntityMapper
 import sestra.projects.impl.documents.repository.DocumentsRepository
@@ -21,16 +18,16 @@ class DocumentsCrud(
     fun create(document: Document, projectId: Int, createdBy: String): CreateDocumentResult {
         val errors = validator.validate(document)
         if (errors.isNotEmpty()) {
-            return InvalidDocument(errors)
+            return CreateDocumentResult.InvalidDocument(errors)
         }
 
         if (repo.existsByProjectIdAndName(projectId, document.name)) {
-            return DocumentAlreadyExists
+            return CreateDocumentResult.DocumentAlreadyExists
         }
 
         val entity = toMapper.toEntity(document, projectId, createdBy)
         repo.save(entity)
-        return DocumentCreated
+        return CreateDocumentResult.DocumentCreated
     }
 
     fun getWithIdByName(projectId: Int, name: String): Pair<Int, Document>? {

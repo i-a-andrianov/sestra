@@ -7,13 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import sestra.projects.api.documents.CreateDocumentResult
 import sestra.projects.api.documents.Document
-import sestra.projects.api.documents.DocumentAlreadyExists
 import sestra.projects.api.documents.DocumentContainer
-import sestra.projects.api.documents.DocumentCreated
 import sestra.projects.api.documents.DocumentsStore
-import sestra.projects.api.documents.InvalidDocument
-import sestra.projects.api.documents.ProjectNotFound
 import java.security.Principal
 
 @RestController
@@ -31,11 +28,11 @@ class DocumentsStoreRestController(
         val result = store.createDocument(principal.name, container, document)
 
         return when (result) {
-            DocumentCreated -> ResponseEntity.ok().body(emptyMap<Any, Any>())
-            is InvalidDocument -> ResponseEntity.badRequest().body(result)
-            ProjectNotFound -> ResponseEntity.badRequest()
+            CreateDocumentResult.DocumentCreated -> ResponseEntity.ok().body(emptyMap<Any, Any>())
+            is CreateDocumentResult.InvalidDocument -> ResponseEntity.badRequest().body(result)
+            CreateDocumentResult.ProjectNotFound -> ResponseEntity.badRequest()
                 .body(mapOf("description" to "Project with given name doesn't exist"))
-            DocumentAlreadyExists -> ResponseEntity.badRequest()
+            CreateDocumentResult.DocumentAlreadyExists -> ResponseEntity.badRequest()
                 .body(mapOf("description" to "Document with same name already exists in given project"))
         }
     }

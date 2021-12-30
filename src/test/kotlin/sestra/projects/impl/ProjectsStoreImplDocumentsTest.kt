@@ -9,15 +9,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 import sestra.common.api.ValidationError
+import sestra.projects.api.documents.CreateDocumentResult
 import sestra.projects.api.documents.Document
-import sestra.projects.api.documents.DocumentAlreadyExists
 import sestra.projects.api.documents.DocumentContainer
-import sestra.projects.api.documents.DocumentCreated
 import sestra.projects.api.documents.GetDocumentsNamesResult
-import sestra.projects.api.documents.InvalidDocument
-import sestra.projects.api.documents.ProjectNotFound
 import sestra.projects.api.layers.Layer
-import sestra.projects.api.layers.SpanLayerType
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.projects.Project
 
 @DataJpaTest
@@ -34,7 +31,7 @@ class ProjectsStoreImplDocumentsTest {
         layers = listOf(
             Layer(
                 name = "layer1",
-                type = SpanLayerType,
+                type = LayerType.Span,
                 attrs = emptyList()
             )
         )
@@ -78,7 +75,7 @@ class ProjectsStoreImplDocumentsTest {
         store.createProject(whoami, project)
         val result = store.createDocument(whoami, container, document)
 
-        assertEquals(DocumentCreated, result)
+        assertEquals(CreateDocumentResult.DocumentCreated, result)
         assertEquals(
             GetDocumentsNamesResult(listOf(document.name)),
             store.getDocumentNames(whoami, container)
@@ -94,10 +91,10 @@ class ProjectsStoreImplDocumentsTest {
         store.createProject(whoami, project)
         val result = store.createDocument(whoami, container, document.copy(text = "    "))
 
-        assertTrue(result is InvalidDocument)
+        assertTrue(result is CreateDocumentResult.InvalidDocument)
         assertEquals(
             setOf("text"),
-            (result as InvalidDocument).errors.map(ValidationError::field).toSet()
+            (result as CreateDocumentResult.InvalidDocument).errors.map(ValidationError::field).toSet()
         )
         assertEquals(
             GetDocumentsNamesResult(emptyList()),
@@ -112,7 +109,7 @@ class ProjectsStoreImplDocumentsTest {
     fun `should return project not found if so`() {
         val result = store.createDocument(whoami, container, document)
 
-        assertEquals(ProjectNotFound, result)
+        assertEquals(CreateDocumentResult.ProjectNotFound, result)
         assertEquals(
             GetDocumentsNamesResult(emptyList()),
             store.getDocumentNames(whoami, container)
@@ -129,7 +126,7 @@ class ProjectsStoreImplDocumentsTest {
 
         val result = store.createDocument(whoami, container, document.copy(text = "haha"))
 
-        assertEquals(DocumentAlreadyExists, result)
+        assertEquals(CreateDocumentResult.DocumentAlreadyExists, result)
         assertEquals(
             GetDocumentsNamesResult(listOf(document.name)),
             store.getDocumentNames(whoami, container)

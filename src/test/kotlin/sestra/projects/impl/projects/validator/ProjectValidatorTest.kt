@@ -8,13 +8,10 @@ import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
 import sestra.common.api.ValidationError
 import sestra.projects.api.layers.Attribute
-import sestra.projects.api.layers.BooleanAttributeType
-import sestra.projects.api.layers.EnumAttributeType
-import sestra.projects.api.layers.IntAttributeType
+import sestra.projects.api.layers.AttributeType
 import sestra.projects.api.layers.Layer
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
 import sestra.projects.api.projects.Project
 import java.util.stream.Stream
 
@@ -48,7 +45,7 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "layer",
-                                type = RelationLayerType(
+                                type = LayerType.Relation(
                                     spanRoles = listOf(
                                         RelationLayerSpanRole(
                                             name = "role",
@@ -60,7 +57,7 @@ class ProjectValidatorTest {
                             ),
                             Layer(
                                 name = "layer2",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = emptyList()
                             )
                         )
@@ -75,11 +72,11 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "layer",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = listOf(
                                     Attribute(
                                         name = "attr",
-                                        type = EnumAttributeType(
+                                        type = AttributeType.Enum(
                                             values = listOf("value")
                                         )
                                     )
@@ -97,17 +94,17 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "layer",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = listOf(
                                     Attribute(
                                         name = "attr",
-                                        type = BooleanAttributeType
+                                        type = AttributeType.Boolean
                                     )
                                 )
                             ),
                             Layer(
                                 name = "layer",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = emptyList()
                             )
                         )
@@ -122,7 +119,7 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "layer1",
-                                type = RelationLayerType(
+                                type = LayerType.Relation(
                                     spanRoles = listOf(
                                         RelationLayerSpanRole(
                                             name = "role1",
@@ -142,7 +139,7 @@ class ProjectValidatorTest {
                             ),
                             Layer(
                                 name = "layer2",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = emptyList()
                             )
                         )
@@ -157,15 +154,15 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "layer",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = listOf(
                                     Attribute(
                                         name = "attr",
-                                        type = BooleanAttributeType
+                                        type = AttributeType.Boolean
                                     ),
                                     Attribute(
                                         name = "attr",
-                                        type = IntAttributeType
+                                        type = AttributeType.Int
                                     )
                                 )
                             )
@@ -181,11 +178,11 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "layer",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = listOf(
                                     Attribute(
                                         name = "attr",
-                                        type = EnumAttributeType(
+                                        type = AttributeType.Enum(
                                             values = listOf("value1", "value1", "value2")
                                         )
                                     )
@@ -203,7 +200,7 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "layer",
-                                type = RelationLayerType(
+                                type = LayerType.Relation(
                                     spanRoles = listOf(
                                         RelationLayerSpanRole(
                                             name = "role1",
@@ -232,7 +229,7 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "",
-                                type = RelationLayerType(
+                                type = LayerType.Relation(
                                     spanRoles = listOf(
                                         RelationLayerSpanRole(
                                             name = "role",
@@ -247,7 +244,7 @@ class ProjectValidatorTest {
                                 attrs = listOf(
                                     Attribute(
                                         name = "    ",
-                                        type = EnumAttributeType(
+                                        type = AttributeType.Enum(
                                             values = listOf(" ", "value")
                                         )
                                     )
@@ -255,7 +252,7 @@ class ProjectValidatorTest {
                             ),
                             Layer(
                                 name = "layer",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = emptyList()
                             )
                         )
@@ -276,7 +273,7 @@ class ProjectValidatorTest {
                         layers = listOf(
                             Layer(
                                 name = "layer1",
-                                type = RelationLayerType(
+                                type = LayerType.Relation(
                                     spanRoles = listOf(
                                         RelationLayerSpanRole(
                                             name = "role1",
@@ -291,7 +288,7 @@ class ProjectValidatorTest {
                                 attrs = listOf(
                                     Attribute(
                                         name = "attr",
-                                        type = EnumAttributeType(
+                                        type = AttributeType.Enum(
                                             values = listOf("value1", "value2")
                                         )
                                     )
@@ -299,7 +296,7 @@ class ProjectValidatorTest {
                             ),
                             Layer(
                                 name = "layer2",
-                                type = SpanLayerType,
+                                type = LayerType.Span,
                                 attrs = emptyList()
                             )
                         )

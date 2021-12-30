@@ -1,15 +1,10 @@
 package sestra.projects.impl.projects.mapper
 
 import sestra.projects.api.layers.Attribute
-import sestra.projects.api.layers.BooleanAttributeType
-import sestra.projects.api.layers.EnumAttributeType
-import sestra.projects.api.layers.FloatAttributeType
-import sestra.projects.api.layers.IntAttributeType
+import sestra.projects.api.layers.AttributeType
 import sestra.projects.api.layers.Layer
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
-import sestra.projects.api.layers.StringAttributeType
 import sestra.projects.api.projects.Project
 import sestra.projects.impl.projects.entities.AttributeEntity
 import sestra.projects.impl.projects.entities.EnumAttributeValueEntity
@@ -45,8 +40,8 @@ class ProjectToEntityMapper {
             inProjectIndex = idx
             name = layer.name
             type = when (layer.type) {
-                is SpanLayerType -> "span"
-                is RelationLayerType -> "relation"
+                is LayerType.Span -> "span"
+                is LayerType.Relation -> "relation"
             }
             attributes = layer.attrs
                 .mapIndexed { idx, attr -> toEntity(idx, attr, this) }
@@ -56,7 +51,7 @@ class ProjectToEntityMapper {
 
     private fun fillRelationSpanRoles(layerEnt: LayerEntity, layer: Layer, layersByName: Map<String, LayerEntity>) {
         layerEnt.relationSpanRoles = when (layer.type) {
-            is RelationLayerType ->
+            is LayerType.Relation ->
                 layer.type.spanRoles
                     .mapIndexed { index, spanRole ->
                         val targetLayer = layersByName[spanRole.targetLayerName]!!
@@ -87,14 +82,14 @@ class ProjectToEntityMapper {
             inLayerIndex = idx
             name = attr.name
             type = when (attr.type) {
-                is BooleanAttributeType -> "boolean"
-                is IntAttributeType -> "int"
-                is FloatAttributeType -> "float"
-                is StringAttributeType -> "string"
-                is EnumAttributeType -> "enum"
+                is AttributeType.Boolean -> "boolean"
+                is AttributeType.Int -> "int"
+                is AttributeType.Float -> "float"
+                is AttributeType.String -> "string"
+                is AttributeType.Enum -> "enum"
             }
             enumValues = when (attr.type) {
-                is EnumAttributeType ->
+                is AttributeType.Enum ->
                     attr.type.values
                         .mapIndexed { idx, value -> toEntity(idx, value, this) }
                         .toSet()

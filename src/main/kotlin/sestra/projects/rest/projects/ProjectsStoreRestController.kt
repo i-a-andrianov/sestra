@@ -7,10 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import sestra.projects.api.projects.InvalidProject
+import sestra.projects.api.projects.CreateProjectResult
 import sestra.projects.api.projects.Project
-import sestra.projects.api.projects.ProjectAlreadyExists
-import sestra.projects.api.projects.ProjectCreated
 import sestra.projects.api.projects.ProjectsStore
 import java.security.Principal
 
@@ -24,9 +22,9 @@ class ProjectsStoreRestController(
         val result = store.createProject(principal.name, project)
 
         return when (result) {
-            ProjectCreated -> ResponseEntity.ok().body(emptyMap<Any, Any>())
-            is InvalidProject -> ResponseEntity.badRequest().body(result)
-            ProjectAlreadyExists -> ResponseEntity.badRequest()
+            CreateProjectResult.ProjectCreated -> ResponseEntity.ok().body(emptyMap<Any, Any>())
+            is CreateProjectResult.InvalidProject -> ResponseEntity.badRequest().body(result)
+            CreateProjectResult.ProjectAlreadyExists -> ResponseEntity.badRequest()
                 .body(mapOf("description" to "Project with same name already exists"))
         }
     }

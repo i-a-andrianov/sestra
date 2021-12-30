@@ -3,26 +3,13 @@ package sestra.projects.impl.annotations.validator
 import sestra.common.api.ValidationError
 import sestra.projects.api.annotations.Annotation
 import sestra.projects.api.annotations.AnnotationAttribute
+import sestra.projects.api.annotations.AnnotationValue
 import sestra.projects.api.annotations.AttributeValue
-import sestra.projects.api.annotations.BooleanAttributeValue
-import sestra.projects.api.annotations.EnumAttributeValue
-import sestra.projects.api.annotations.FloatAttributeValue
-import sestra.projects.api.annotations.IntAttributeValue
-import sestra.projects.api.annotations.RelationAnnotationValue
-import sestra.projects.api.annotations.SpanAnnotationValue
-import sestra.projects.api.annotations.StringAttributeValue
 import sestra.projects.api.documents.Document
 import sestra.projects.api.layers.Attribute
 import sestra.projects.api.layers.AttributeType
-import sestra.projects.api.layers.BooleanAttributeType
-import sestra.projects.api.layers.EnumAttributeType
-import sestra.projects.api.layers.FloatAttributeType
-import sestra.projects.api.layers.IntAttributeType
 import sestra.projects.api.layers.Layer
 import sestra.projects.api.layers.LayerType
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
-import sestra.projects.api.layers.StringAttributeType
 import java.util.UUID
 
 class AnnotationValidator {
@@ -37,8 +24,8 @@ class AnnotationValidator {
         val value = annotation.value
 
         result += when (value) {
-            is SpanAnnotationValue -> validateSpanValue(value, targetDocument.text, targetLayer.type)
-            is RelationAnnotationValue -> validateRelationValue(
+            is AnnotationValue.Span -> validateSpanValue(value, targetDocument.text, targetLayer.type)
+            is AnnotationValue.Relation -> validateRelationValue(
                 value,
                 existsAnnotationByLayerNameAndId,
                 targetLayer.type
@@ -51,13 +38,13 @@ class AnnotationValidator {
     }
 
     private fun validateSpanValue(
-        value: SpanAnnotationValue,
+        value: AnnotationValue.Span,
         text: String,
         layerType: LayerType
     ): List<ValidationError> {
         val result = mutableListOf<ValidationError>()
 
-        if (layerType !is SpanLayerType) {
+        if (layerType !is LayerType.Span) {
             result += ValidationError("value", "is span while target layer isn't")
         }
 
@@ -77,7 +64,7 @@ class AnnotationValidator {
     }
 
     private fun validateRelationValue(
-        value: RelationAnnotationValue,
+        value: AnnotationValue.Relation,
         existsAnnotationByLayerNameAndId: (String, UUID) -> Boolean,
         layerType: LayerType
     ): List<ValidationError> {
@@ -91,7 +78,7 @@ class AnnotationValidator {
             }
         }
 
-        if (layerType !is RelationLayerType) {
+        if (layerType !is LayerType.Relation) {
             result += ValidationError("value", "is relation while target layer isn't")
             return result
         }
@@ -171,18 +158,18 @@ class AnnotationValidator {
         val result = mutableListOf<ValidationError>()
 
         val compatibleTypes = when (value) {
-            is BooleanAttributeValue -> type is BooleanAttributeType
-            is IntAttributeValue -> type is IntAttributeType
-            is FloatAttributeValue -> type is FloatAttributeType
-            is StringAttributeValue -> type is StringAttributeType
-            is EnumAttributeValue -> type is EnumAttributeType
+            is AttributeValue.Boolean -> type is AttributeType.Boolean
+            is AttributeValue.Int -> type is AttributeType.Int
+            is AttributeValue.Float -> type is AttributeType.Float
+            is AttributeValue.String -> type is AttributeType.String
+            is AttributeValue.Enum -> type is AttributeType.Enum
         }
 
         if (!compatibleTypes) {
             result += ValidationError("attrs[$idx].value", "incompatible type with layer")
         }
 
-        if (value is EnumAttributeValue && type is EnumAttributeType && value.value !in type.values) {
+        if (value is AttributeValue.Enum && type is AttributeType.Enum && value.value !in type.values) {
             result += ValidationError("attrs[$idx].value", "unknown enum constant")
         }
 

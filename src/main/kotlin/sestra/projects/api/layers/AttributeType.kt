@@ -1,15 +1,15 @@
 package sestra.projects.api.layers
 
-sealed interface AttributeType
+sealed interface AttributeType {
+    object Boolean : AttributeType
 
-object BooleanAttributeType : AttributeType
+    object Int : AttributeType
 
-object IntAttributeType : AttributeType
+    object Float : AttributeType
 
-object FloatAttributeType : AttributeType
+    object String : AttributeType
 
-object StringAttributeType : AttributeType
-
-data class EnumAttributeType(
-    val values: List<String>
-) : AttributeType
+    data class Enum(
+        val values: List<kotlin.String>
+    ) : AttributeType
+}

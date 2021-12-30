@@ -3,10 +3,7 @@ package sestra.projects.impl.projects
 import sestra.projects.api.layers.Layer
 import sestra.projects.api.projects.CreateProjectResult
 import sestra.projects.api.projects.GetProjectsNamesResult
-import sestra.projects.api.projects.InvalidProject
 import sestra.projects.api.projects.Project
-import sestra.projects.api.projects.ProjectAlreadyExists
-import sestra.projects.api.projects.ProjectCreated
 import sestra.projects.impl.projects.mapper.ProjectFromEntityMapper
 import sestra.projects.impl.projects.mapper.ProjectToEntityMapper
 import sestra.projects.impl.projects.repository.LayersRepository
@@ -24,16 +21,16 @@ class ProjectsCrud(
     fun create(project: Project, createdBy: String): CreateProjectResult {
         val errors = validator.validate(project)
         if (errors.isNotEmpty()) {
-            return InvalidProject(errors)
+            return CreateProjectResult.InvalidProject(errors)
         }
 
         if (repo.existsByName(project.name)) {
-            return ProjectAlreadyExists
+            return CreateProjectResult.ProjectAlreadyExists
         }
 
         val entity = toMapper.toEntity(project, createdBy)
         repo.save(entity)
-        return ProjectCreated
+        return CreateProjectResult.ProjectCreated
     }
 
     fun getLayerIdByName(projectName: String, name: String): Int? {

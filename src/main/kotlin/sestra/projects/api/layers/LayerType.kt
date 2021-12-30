@@ -1,9 +1,9 @@
 package sestra.projects.api.layers
 
-sealed interface LayerType
+sealed interface LayerType {
+    object Span : LayerType
 
-object SpanLayerType : LayerType
-
-data class RelationLayerType(
-    val spanRoles: List<RelationLayerSpanRole>
-) : LayerType
+    data class Relation(
+        val spanRoles: List<RelationLayerSpanRole>
+    ) : LayerType
+}

@@ -8,37 +8,20 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 import sestra.projects.api.annotations.Annotation
-import sestra.projects.api.annotations.AnnotationAlreadyExists
 import sestra.projects.api.annotations.AnnotationAttribute
 import sestra.projects.api.annotations.AnnotationContainer
-import sestra.projects.api.annotations.AnnotationCreated
-import sestra.projects.api.annotations.AnnotationDeleted
-import sestra.projects.api.annotations.AnnotationIsReferencedByOthers
-import sestra.projects.api.annotations.AnnotationNotFound
-import sestra.projects.api.annotations.BooleanAttributeValue
-import sestra.projects.api.annotations.DocumentNotFound
-import sestra.projects.api.annotations.EnumAttributeValue
-import sestra.projects.api.annotations.FloatAttributeValue
-import sestra.projects.api.annotations.IntAttributeValue
-import sestra.projects.api.annotations.InvalidAnnotation
-import sestra.projects.api.annotations.LayerNotFound
-import sestra.projects.api.annotations.ProjectNotFound
+import sestra.projects.api.annotations.AnnotationValue
+import sestra.projects.api.annotations.AttributeValue
+import sestra.projects.api.annotations.CreateAnnotationResult
+import sestra.projects.api.annotations.DeleteAnnotationResult
 import sestra.projects.api.annotations.RelationAnnotationSpanRole
-import sestra.projects.api.annotations.RelationAnnotationValue
-import sestra.projects.api.annotations.SpanAnnotationValue
-import sestra.projects.api.annotations.StringAttributeValue
 import sestra.projects.api.documents.Document
 import sestra.projects.api.documents.DocumentContainer
 import sestra.projects.api.layers.Attribute
-import sestra.projects.api.layers.BooleanAttributeType
-import sestra.projects.api.layers.EnumAttributeType
-import sestra.projects.api.layers.FloatAttributeType
-import sestra.projects.api.layers.IntAttributeType
+import sestra.projects.api.layers.AttributeType
 import sestra.projects.api.layers.Layer
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
-import sestra.projects.api.layers.StringAttributeType
 import sestra.projects.api.projects.Project
 import java.util.UUID
 
@@ -57,25 +40,25 @@ class ProjectsStoreImplAnnotationsTest {
         layers = listOf(
             Layer(
                 name = "layer1",
-                type = SpanLayerType,
+                type = LayerType.Span,
                 attrs = listOf(
                     Attribute(
                         name = "attr1",
-                        type = BooleanAttributeType
+                        type = AttributeType.Boolean
                     ),
                     Attribute(
                         name = "attr2",
-                        type = IntAttributeType
+                        type = AttributeType.Int
                     ),
                     Attribute(
                         name = "attr3",
-                        type = FloatAttributeType
+                        type = AttributeType.Float
                     )
                 )
             ),
             Layer(
                 name = "layer2",
-                type = RelationLayerType(
+                type = LayerType.Relation(
                     spanRoles = listOf(
                         RelationLayerSpanRole(
                             name = "role1",
@@ -90,11 +73,11 @@ class ProjectsStoreImplAnnotationsTest {
                 attrs = listOf(
                     Attribute(
                         name = "attr1",
-                        type = StringAttributeType
+                        type = AttributeType.String
                     ),
                     Attribute(
                         name = "attr2",
-                        type = EnumAttributeType(
+                        type = AttributeType.Enum(
                             values = listOf("value1", "value2")
                         )
                     )
@@ -120,22 +103,22 @@ class ProjectsStoreImplAnnotationsTest {
 
     private val annotation1 = Annotation(
         id = UUID.randomUUID(),
-        value = SpanAnnotationValue(
+        value = AnnotationValue.Span(
             start = 5,
             end = 6
         ),
         attrs = listOf(
             AnnotationAttribute(
                 name = "attr1",
-                value = BooleanAttributeValue(value = true)
+                value = AttributeValue.Boolean(value = true)
             ),
             AnnotationAttribute(
                 name = "attr2",
-                value = IntAttributeValue(value = 10)
+                value = AttributeValue.Int(value = 10)
             ),
             AnnotationAttribute(
                 name = "attr3",
-                value = FloatAttributeValue(value = 3.14f)
+                value = AttributeValue.Float(value = 3.14f)
             )
         )
     )
@@ -148,7 +131,7 @@ class ProjectsStoreImplAnnotationsTest {
 
     private val annotation2 = Annotation(
         id = UUID.randomUUID(),
-        value = RelationAnnotationValue(
+        value = AnnotationValue.Relation(
             spanRoles = listOf(
                 RelationAnnotationSpanRole(
                     name = "role1",
@@ -163,11 +146,11 @@ class ProjectsStoreImplAnnotationsTest {
         attrs = listOf(
             AnnotationAttribute(
                 name = "attr1",
-                value = StringAttributeValue(value = "haha")
+                value = AttributeValue.String(value = "haha")
             ),
             AnnotationAttribute(
                 name = "attr2",
-                value = EnumAttributeValue(value = "value1")
+                value = AttributeValue.Enum(value = "value1")
             )
         )
     )
@@ -186,7 +169,7 @@ class ProjectsStoreImplAnnotationsTest {
     @Test
     fun `create should return project not found when so`() {
         assertEquals(
-            ProjectNotFound,
+            CreateAnnotationResult.ProjectNotFound,
             store.createAnnotation(user1, annotationContainer1, annotation1)
         )
         assertEquals(
@@ -200,7 +183,7 @@ class ProjectsStoreImplAnnotationsTest {
         store.createProject(user1, project)
 
         assertEquals(
-            DocumentNotFound,
+            CreateAnnotationResult.DocumentNotFound,
             store.createAnnotation(user1, annotationContainer1, annotation1)
         )
         assertEquals(
@@ -217,7 +200,7 @@ class ProjectsStoreImplAnnotationsTest {
         val container = annotationContainer1.copy(layerName = "layer3")
 
         assertEquals(
-            LayerNotFound,
+            CreateAnnotationResult.LayerNotFound,
             store.createAnnotation(user1, container, annotation1)
         )
         assertEquals(
@@ -234,7 +217,7 @@ class ProjectsStoreImplAnnotationsTest {
         val annotation = annotation1.copy(attrs = emptyList())
 
         assertInstanceOf(
-            InvalidAnnotation::class.java,
+            CreateAnnotationResult.InvalidAnnotation::class.java,
             store.createAnnotation(user1, annotationContainer1, annotation)
         )
         assertEquals(
@@ -250,7 +233,7 @@ class ProjectsStoreImplAnnotationsTest {
         store.createAnnotation(user1, annotationContainer1, annotation1)
 
         assertEquals(
-            AnnotationAlreadyExists,
+            CreateAnnotationResult.AnnotationAlreadyExists,
             store.createAnnotation(user1, annotationContainer1, annotation1)
         )
     }
@@ -261,7 +244,7 @@ class ProjectsStoreImplAnnotationsTest {
         store.createDocument(user1, documentContainer, document)
 
         assertEquals(
-            AnnotationCreated,
+            CreateAnnotationResult.AnnotationCreated,
             store.createAnnotation(user1, annotationContainer1, annotation1)
         )
         assertEquals(
@@ -274,7 +257,7 @@ class ProjectsStoreImplAnnotationsTest {
         )
 
         assertEquals(
-            AnnotationCreated,
+            CreateAnnotationResult.AnnotationCreated,
             store.createAnnotation(user1, annotationContainer2, annotation2)
         )
         assertEquals(
@@ -293,7 +276,7 @@ class ProjectsStoreImplAnnotationsTest {
         store.createDocument(user1, documentContainer, document)
 
         assertEquals(
-            AnnotationCreated,
+            CreateAnnotationResult.AnnotationCreated,
             store.createAnnotation(user1, annotationContainer1, annotation1)
         )
         assertEquals(
@@ -308,7 +291,7 @@ class ProjectsStoreImplAnnotationsTest {
         store.createDocument(user1, documentContainer, document)
 
         assertEquals(
-            AnnotationNotFound,
+            DeleteAnnotationResult.AnnotationNotFound,
             store.deleteAnnotation(user1, annotation1.id)
         )
     }
@@ -320,7 +303,7 @@ class ProjectsStoreImplAnnotationsTest {
         store.createAnnotation(user1, annotationContainer1, annotation1)
 
         assertEquals(
-            AnnotationNotFound,
+            DeleteAnnotationResult.AnnotationNotFound,
             store.deleteAnnotation(user2, annotation1.id)
         )
     }
@@ -333,7 +316,7 @@ class ProjectsStoreImplAnnotationsTest {
         store.createAnnotation(user1, annotationContainer2, annotation2)
 
         assertEquals(
-            AnnotationIsReferencedByOthers(
+            DeleteAnnotationResult.AnnotationIsReferencedByOthers(
                 ids = listOf(annotation2.id)
             ),
             store.deleteAnnotation(user1, annotation1.id)
@@ -348,7 +331,7 @@ class ProjectsStoreImplAnnotationsTest {
         store.createAnnotation(user1, annotationContainer2, annotation2)
 
         assertEquals(
-            AnnotationDeleted,
+            DeleteAnnotationResult.AnnotationDeleted,
             store.deleteAnnotation(user1, annotation2.id)
         )
         assertEquals(
@@ -361,7 +344,7 @@ class ProjectsStoreImplAnnotationsTest {
         )
 
         assertEquals(
-            AnnotationDeleted,
+            DeleteAnnotationResult.AnnotationDeleted,
             store.deleteAnnotation(user1, annotation1.id)
         )
         assertEquals(

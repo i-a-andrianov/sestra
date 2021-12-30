@@ -2,7 +2,7 @@ package sestra.projects.impl.projects.validator
 
 import sestra.common.api.ValidationError
 import sestra.projects.api.layers.Attribute
-import sestra.projects.api.layers.EnumAttributeType
+import sestra.projects.api.layers.AttributeType
 
 class AttributeValidator {
     fun validate(attr: Attribute): List<ValidationError> {
@@ -12,7 +12,7 @@ class AttributeValidator {
             result += ValidationError("name", "should not be blank")
         }
 
-        if (attr.type is EnumAttributeType) {
+        if (attr.type is AttributeType.Enum) {
             if (attr.type.values.size < 2) {
                 result += ValidationError("type.values", "should have at least 2")
             }

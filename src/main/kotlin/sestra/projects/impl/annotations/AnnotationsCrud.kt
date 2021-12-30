@@ -1,14 +1,8 @@
 package sestra.projects.impl.annotations
 
 import sestra.projects.api.annotations.Annotation
-import sestra.projects.api.annotations.AnnotationAlreadyExists
-import sestra.projects.api.annotations.AnnotationCreated
-import sestra.projects.api.annotations.AnnotationDeleted
-import sestra.projects.api.annotations.AnnotationIsReferencedByOthers
-import sestra.projects.api.annotations.AnnotationNotFound
 import sestra.projects.api.annotations.CreateAnnotationResult
 import sestra.projects.api.annotations.DeleteAnnotationResult
-import sestra.projects.api.annotations.InvalidAnnotation
 import sestra.projects.api.documents.Document
 import sestra.projects.api.layers.Layer
 import sestra.projects.impl.annotations.mapper.AnnotationFromEntityMapper
@@ -40,11 +34,11 @@ class AnnotationsCrud(
             repo.existsByUuidAndLayerIdAndDocumentIdAndCreatedBy(id, targetLayerId, documentId, createdBy)
         }
         if (errors.isNotEmpty()) {
-            return InvalidAnnotation(errors)
+            return CreateAnnotationResult.InvalidAnnotation(errors)
         }
 
         if (repo.existsByUuid(annotation.id)) {
-            return AnnotationAlreadyExists
+            return CreateAnnotationResult.AnnotationAlreadyExists
         }
 
         val entity = toMapper.toEntity(annotation, layerId, layer, documentId, createdBy) { targetLayerName, id ->
@@ -52,7 +46,7 @@ class AnnotationsCrud(
             repo.findByUuidAndLayerIdAndDocumentIdAndCreatedBy(id, targetLayerId, documentId, createdBy)
         }
         repo.save(entity)
-        return AnnotationCreated
+        return CreateAnnotationResult.AnnotationCreated
     }
 
     fun getAll(layerId: Int, documentId: Int, createdBy: String): List<Annotation> {
@@ -62,17 +56,17 @@ class AnnotationsCrud(
 
     fun delete(id: UUID, createdBy: String): DeleteAnnotationResult {
         if (!repo.existsByUuidAndCreatedBy(id, createdBy)) {
-            return AnnotationNotFound
+            return DeleteAnnotationResult.AnnotationNotFound
         }
 
         val entities = spanRolesRepo.findAllByTargetAnnotationUuid(id)
         // should deduplicate as many roles could reference the same annotation
         val ids = entities.map { e -> e.annotation!!.uuid!! }.toSet().toList()
         if (ids.isNotEmpty()) {
-            return AnnotationIsReferencedByOthers(ids)
+            return DeleteAnnotationResult.AnnotationIsReferencedByOthers(ids)
         }
 
         repo.deleteByUuid(id)
-        return AnnotationDeleted
+        return DeleteAnnotationResult.AnnotationDeleted
     }
 }

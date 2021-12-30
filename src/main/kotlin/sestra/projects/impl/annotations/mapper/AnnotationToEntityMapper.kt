@@ -2,17 +2,12 @@ package sestra.projects.impl.annotations.mapper
 
 import sestra.projects.api.annotations.Annotation
 import sestra.projects.api.annotations.AnnotationAttribute
-import sestra.projects.api.annotations.BooleanAttributeValue
-import sestra.projects.api.annotations.EnumAttributeValue
-import sestra.projects.api.annotations.FloatAttributeValue
-import sestra.projects.api.annotations.IntAttributeValue
+import sestra.projects.api.annotations.AnnotationValue
+import sestra.projects.api.annotations.AttributeValue
 import sestra.projects.api.annotations.RelationAnnotationSpanRole
-import sestra.projects.api.annotations.RelationAnnotationValue
-import sestra.projects.api.annotations.SpanAnnotationValue
-import sestra.projects.api.annotations.StringAttributeValue
 import sestra.projects.api.layers.Layer
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
 import sestra.projects.impl.annotations.entities.AnnotationAttributeEntity
 import sestra.projects.impl.annotations.entities.AnnotationEntity
 import sestra.projects.impl.annotations.entities.RelationAnnotationSpanRoleEntity
@@ -32,21 +27,21 @@ class AnnotationToEntityMapper {
             this.documentId = documentId
             this.layerId = layerId
             type = when (annotation.value) {
-                is SpanAnnotationValue -> "span"
-                is RelationAnnotationValue -> "relation"
+                is AnnotationValue.Span -> "span"
+                is AnnotationValue.Relation -> "relation"
             }
             spanStart = when (annotation.value) {
-                is SpanAnnotationValue -> annotation.value.start
+                is AnnotationValue.Span -> annotation.value.start
                 else -> null
             }
             spanEnd = when (annotation.value) {
-                is SpanAnnotationValue -> annotation.value.end
+                is AnnotationValue.Span -> annotation.value.end
                 else -> null
             }
             relationSpanRoles = when (annotation.value) {
-                is SpanAnnotationValue -> emptySet()
-                is RelationAnnotationValue -> {
-                    val roleByName = (layer.type as RelationLayerType).spanRoles
+                is AnnotationValue.Span -> emptySet()
+                is AnnotationValue.Relation -> {
+                    val roleByName = (layer.type as LayerType.Relation).spanRoles
                         .associateBy { role -> role.name }
 
                     annotation.value.spanRoles
@@ -86,30 +81,30 @@ class AnnotationToEntityMapper {
             inAnnotationIndex = idx
             name = attr.name
             type = when (attr.value) {
-                is BooleanAttributeValue -> "boolean"
-                is IntAttributeValue -> "int"
-                is FloatAttributeValue -> "float"
-                is StringAttributeValue -> "string"
-                is EnumAttributeValue -> "enum"
+                is AttributeValue.Boolean -> "boolean"
+                is AttributeValue.Int -> "int"
+                is AttributeValue.Float -> "float"
+                is AttributeValue.String -> "string"
+                is AttributeValue.Enum -> "enum"
             }
             booleanValue = when (attr.value) {
-                is BooleanAttributeValue -> attr.value.value
+                is AttributeValue.Boolean -> attr.value.value
                 else -> null
             }
             intValue = when (attr.value) {
-                is IntAttributeValue -> attr.value.value
+                is AttributeValue.Int -> attr.value.value
                 else -> null
             }
             floatValue = when (attr.value) {
-                is FloatAttributeValue -> attr.value.value
+                is AttributeValue.Float -> attr.value.value
                 else -> null
             }
             stringValue = when (attr.value) {
-                is StringAttributeValue -> attr.value.value
+                is AttributeValue.String -> attr.value.value
                 else -> null
             }
             enumValue = when (attr.value) {
-                is EnumAttributeValue -> attr.value.value
+                is AttributeValue.Enum -> attr.value.value
                 else -> null
             }
         }

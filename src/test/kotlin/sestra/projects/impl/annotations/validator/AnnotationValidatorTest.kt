@@ -9,25 +9,15 @@ import org.junit.jupiter.params.provider.ArgumentsSource
 import sestra.common.api.ValidationError
 import sestra.projects.api.annotations.Annotation
 import sestra.projects.api.annotations.AnnotationAttribute
-import sestra.projects.api.annotations.BooleanAttributeValue
-import sestra.projects.api.annotations.EnumAttributeValue
-import sestra.projects.api.annotations.FloatAttributeValue
-import sestra.projects.api.annotations.IntAttributeValue
+import sestra.projects.api.annotations.AnnotationValue
+import sestra.projects.api.annotations.AttributeValue
 import sestra.projects.api.annotations.RelationAnnotationSpanRole
-import sestra.projects.api.annotations.RelationAnnotationValue
-import sestra.projects.api.annotations.SpanAnnotationValue
-import sestra.projects.api.annotations.StringAttributeValue
 import sestra.projects.api.documents.Document
 import sestra.projects.api.layers.Attribute
-import sestra.projects.api.layers.BooleanAttributeType
-import sestra.projects.api.layers.EnumAttributeType
-import sestra.projects.api.layers.FloatAttributeType
-import sestra.projects.api.layers.IntAttributeType
+import sestra.projects.api.layers.AttributeType
 import sestra.projects.api.layers.Layer
+import sestra.projects.api.layers.LayerType
 import sestra.projects.api.layers.RelationLayerSpanRole
-import sestra.projects.api.layers.RelationLayerType
-import sestra.projects.api.layers.SpanLayerType
-import sestra.projects.api.layers.StringAttributeType
 import java.util.UUID
 import java.util.stream.Stream
 
@@ -68,7 +58,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = -1,
                             end = 5
                         ),
@@ -76,7 +66,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer1",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = emptyList()
                     ),
                     { _: String, _: UUID -> false },
@@ -87,7 +77,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = 5,
                             end = 5
                         ),
@@ -95,7 +85,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer1",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = emptyList()
                     ),
                     { _: String, _: UUID -> false },
@@ -106,7 +96,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = 5,
                             end = 14
                         ),
@@ -114,7 +104,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer1",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = emptyList()
                     ),
                     { _: String, _: UUID -> false },
@@ -125,28 +115,28 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = 5,
                             end = 6
                         ),
                         attrs = listOf(
                             AnnotationAttribute(
                                 name = "attr1",
-                                value = BooleanAttributeValue(value = true)
+                                value = AttributeValue.Boolean(value = true)
                             ),
                             AnnotationAttribute(
                                 name = "attr1",
-                                value = BooleanAttributeValue(value = false)
+                                value = AttributeValue.Boolean(value = false)
                             )
                         )
                     ),
                     Layer(
                         name = "layer1",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = listOf(
                             Attribute(
                                 name = "attr1",
-                                type = BooleanAttributeType
+                                type = AttributeType.Boolean
                             )
                         )
                     ),
@@ -158,20 +148,20 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = 5,
                             end = 6
                         ),
                         attrs = listOf(
                             AnnotationAttribute(
                                 name = "attr1",
-                                value = BooleanAttributeValue(value = true)
+                                value = AttributeValue.Boolean(value = true)
                             )
                         )
                     ),
                     Layer(
                         name = "layer1",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = emptyList()
                     ),
                     { _: String, _: UUID -> false },
@@ -182,7 +172,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = 5,
                             end = 6
                         ),
@@ -190,11 +180,11 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer1",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = listOf(
                             Attribute(
                                 name = "attr1",
-                                type = BooleanAttributeType
+                                type = AttributeType.Boolean
                             )
                         )
                     ),
@@ -206,58 +196,58 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = 5,
                             end = 6
                         ),
                         attrs = listOf(
                             AnnotationAttribute(
                                 name = "attr1",
-                                value = BooleanAttributeValue(value = true)
+                                value = AttributeValue.Boolean(value = true)
                             ),
                             AnnotationAttribute(
                                 name = "attr2",
-                                value = IntAttributeValue(value = 10)
+                                value = AttributeValue.Int(value = 10)
                             ),
                             AnnotationAttribute(
                                 name = "attr3",
-                                value = FloatAttributeValue(value = 3.14f)
+                                value = AttributeValue.Float(value = 3.14f)
                             ),
                             AnnotationAttribute(
                                 name = "attr4",
-                                value = StringAttributeValue(value = "haha")
+                                value = AttributeValue.String(value = "haha")
                             ),
                             AnnotationAttribute(
                                 name = "attr5",
-                                value = EnumAttributeValue(value = "value1")
+                                value = AttributeValue.Enum(value = "value1")
                             )
                         )
                     ),
                     Layer(
                         name = "layer1",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = listOf(
                             Attribute(
                                 name = "attr1",
-                                type = IntAttributeType
+                                type = AttributeType.Int
                             ),
                             Attribute(
                                 name = "attr2",
-                                type = FloatAttributeType
+                                type = AttributeType.Float
                             ),
                             Attribute(
                                 name = "attr3",
-                                type = StringAttributeType
+                                type = AttributeType.String
                             ),
                             Attribute(
                                 name = "attr4",
-                                type = EnumAttributeType(
+                                type = AttributeType.Enum(
                                     values = listOf("value1", "value2")
                                 )
                             ),
                             Attribute(
                                 name = "attr5",
-                                type = BooleanAttributeType
+                                type = AttributeType.Boolean
                             )
                         )
                     ),
@@ -269,7 +259,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = 5,
                             end = 6
                         ),
@@ -277,7 +267,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer2",
-                        type = RelationLayerType(
+                        type = LayerType.Relation(
                             spanRoles = listOf(
                                 RelationLayerSpanRole(
                                     name = "role1",
@@ -299,7 +289,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid2,
-                        value = RelationAnnotationValue(
+                        value = AnnotationValue.Relation(
                             spanRoles = listOf(
                                 RelationAnnotationSpanRole(
                                     name = "role1",
@@ -315,7 +305,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer2",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = emptyList()
                     ),
                     { _: String, _: UUID -> false },
@@ -326,7 +316,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid2,
-                        value = RelationAnnotationValue(
+                        value = AnnotationValue.Relation(
                             spanRoles = listOf(
                                 RelationAnnotationSpanRole(
                                     name = "role1",
@@ -346,7 +336,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer2",
-                        type = RelationLayerType(
+                        type = LayerType.Relation(
                             spanRoles = listOf(
                                 RelationLayerSpanRole(
                                     name = "role1",
@@ -368,7 +358,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid2,
-                        value = RelationAnnotationValue(
+                        value = AnnotationValue.Relation(
                             spanRoles = listOf(
                                 RelationAnnotationSpanRole(
                                     name = "role1",
@@ -388,7 +378,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer2",
-                        type = RelationLayerType(
+                        type = LayerType.Relation(
                             spanRoles = listOf(
                                 RelationLayerSpanRole(
                                     name = "role1",
@@ -410,7 +400,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid2,
-                        value = RelationAnnotationValue(
+                        value = AnnotationValue.Relation(
                             spanRoles = listOf(
                                 RelationAnnotationSpanRole(
                                     name = "role1",
@@ -426,7 +416,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer2",
-                        type = RelationLayerType(
+                        type = LayerType.Relation(
                             spanRoles = listOf(
                                 RelationLayerSpanRole(
                                     name = "role1",
@@ -452,7 +442,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid2,
-                        value = RelationAnnotationValue(
+                        value = AnnotationValue.Relation(
                             spanRoles = listOf(
                                 RelationAnnotationSpanRole(
                                     name = "role1",
@@ -468,7 +458,7 @@ class AnnotationValidatorTest {
                     ),
                     Layer(
                         name = "layer2",
-                        type = RelationLayerType(
+                        type = LayerType.Relation(
                             spanRoles = listOf(
                                 RelationLayerSpanRole(
                                     name = "role1",
@@ -490,40 +480,40 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid1,
-                        value = SpanAnnotationValue(
+                        value = AnnotationValue.Span(
                             start = 5,
                             end = 6
                         ),
                         attrs = listOf(
                             AnnotationAttribute(
                                 name = "attr1",
-                                value = BooleanAttributeValue(value = true)
+                                value = AttributeValue.Boolean(value = true)
                             ),
                             AnnotationAttribute(
                                 name = "attr2",
-                                value = IntAttributeValue(value = 10)
+                                value = AttributeValue.Int(value = 10)
                             ),
                             AnnotationAttribute(
                                 name = "attr3",
-                                value = FloatAttributeValue(value = 3.14f)
+                                value = AttributeValue.Float(value = 3.14f)
                             )
                         )
                     ),
                     Layer(
                         name = "layer1",
-                        type = SpanLayerType,
+                        type = LayerType.Span,
                         attrs = listOf(
                             Attribute(
                                 name = "attr1",
-                                type = BooleanAttributeType
+                                type = AttributeType.Boolean
                             ),
                             Attribute(
                                 name = "attr2",
-                                type = IntAttributeType
+                                type = AttributeType.Int
                             ),
                             Attribute(
                                 name = "attr3",
-                                type = FloatAttributeType
+                                type = AttributeType.Float
                             )
                         )
                     ),
@@ -535,7 +525,7 @@ class AnnotationValidatorTest {
                 Arguments.of(
                     Annotation(
                         id = uuid2,
-                        value = RelationAnnotationValue(
+                        value = AnnotationValue.Relation(
                             spanRoles = listOf(
                                 RelationAnnotationSpanRole(
                                     name = "role1",
@@ -550,17 +540,17 @@ class AnnotationValidatorTest {
                         attrs = listOf(
                             AnnotationAttribute(
                                 name = "attr1",
-                                value = StringAttributeValue(value = "haha")
+                                value = AttributeValue.String(value = "haha")
                             ),
                             AnnotationAttribute(
                                 name = "attr2",
-                                value = EnumAttributeValue(value = "value1")
+                                value = AttributeValue.Enum(value = "value1")
                             )
                         )
                     ),
                     Layer(
                         name = "layer2",
-                        type = RelationLayerType(
+                        type = LayerType.Relation(
                             spanRoles = listOf(
                                 RelationLayerSpanRole(
                                     name = "role1",
@@ -575,11 +565,11 @@ class AnnotationValidatorTest {
                         attrs = listOf(
                             Attribute(
                                 name = "attr1",
-                                type = StringAttributeType
+                                type = AttributeType.String
                             ),
                             Attribute(
                                 name = "attr2",
-                                type = EnumAttributeType(
+                                type = AttributeType.Enum(
                                     values = listOf("value1", "value2")
                                 )
                             )

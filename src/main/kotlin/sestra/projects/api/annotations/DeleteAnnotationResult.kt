@@ -2,12 +2,12 @@ package sestra.projects.api.annotations
 
 import java.util.UUID
 
-sealed interface DeleteAnnotationResult
+sealed interface DeleteAnnotationResult {
+    object AnnotationDeleted : DeleteAnnotationResult
 
-object AnnotationDeleted : DeleteAnnotationResult
+    data class AnnotationIsReferencedByOthers(
+        val ids: List<UUID>
+    ) : DeleteAnnotationResult
 
-data class AnnotationIsReferencedByOthers(
-    val ids: List<UUID>
-) : DeleteAnnotationResult
-
-object AnnotationNotFound : DeleteAnnotationResult
+    object AnnotationNotFound : DeleteAnnotationResult
+}
