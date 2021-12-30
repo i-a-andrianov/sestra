@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne
 @Entity(name = "enum_attribute_values")
 class EnumAttributeValueEntity : AbstractEntity() {
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "attribute_id")
+    @JoinColumn(name = "attribute_id", nullable = false)
     var attribute: AttributeEntity? = null
 
     @Column(name = "in_attribute_index")

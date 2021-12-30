@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne
 @Entity(name = "annotation_attributes")
 class AnnotationAttributeEntity : AbstractEntity() {
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "annotation_id")
+    @JoinColumn(name = "annotation_id", nullable = false)
     var annotation: AnnotationEntity? = null
 
     @Column(name = "in_annotation_index")

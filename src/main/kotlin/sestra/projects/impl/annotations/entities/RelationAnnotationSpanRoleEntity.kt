@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne
 @Entity(name = "relation_annotation_span_roles")
 class RelationAnnotationSpanRoleEntity : AbstractEntity() {
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "annotation_id")
+    @JoinColumn(name = "annotation_id", nullable = false)
     var annotation: AnnotationEntity? = null
 
     @Column(name = "in_annotation_index")
@@ -20,7 +20,7 @@ class RelationAnnotationSpanRoleEntity : AbstractEntity() {
     var name: String? = null
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "target_annotation_id")
+    @JoinColumn(name = "target_annotation_id", nullable = false)
     var targetAnnotation: AnnotationEntity? = null
 
     override fun equals(other: Any?): Boolean {

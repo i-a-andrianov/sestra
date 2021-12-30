@@ -12,7 +12,7 @@ import javax.persistence.OneToMany
 @Entity(name = "layers")
 class LayerEntity : AbstractEntity() {
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     var project: ProjectEntity? = null
 
     @Column(name = "in_project_index")

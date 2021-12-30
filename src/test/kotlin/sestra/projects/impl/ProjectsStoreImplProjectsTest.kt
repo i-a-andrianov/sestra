@@ -138,6 +138,35 @@ class ProjectsStoreImplProjectsTest {
                         )
                     ),
                     "span and relation layers without attrs"
+                ),
+                Arguments.of(
+                    Project(
+                        "project 3",
+                        layers = listOf(
+                            Layer(
+                                name = "layer 1",
+                                type = LayerType.Relation(
+                                    spanRoles = listOf(
+                                        RelationLayerSpanRole(
+                                            name = "role 1",
+                                            targetLayerName = "layer 2"
+                                        ),
+                                        RelationLayerSpanRole(
+                                            name = "role 2",
+                                            targetLayerName = "layer 2"
+                                        )
+                                    )
+                                ),
+                                attrs = emptyList()
+                            ),
+                            Layer(
+                                name = "layer 2",
+                                type = LayerType.Span,
+                                attrs = emptyList()
+                            )
+                        )
+                    ),
+                    "relation and span layers with forward ref"
                 )
             )
         }
