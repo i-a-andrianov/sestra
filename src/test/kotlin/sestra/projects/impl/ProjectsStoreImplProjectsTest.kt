@@ -24,7 +24,7 @@ import sestra.projects.api.projects.GetProjectsNamesResult
 import sestra.projects.api.projects.Project
 import java.util.stream.Stream
 
-@DataJpaTest
+@DataJpaTest(properties = [TestContainersPostgres.url])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(ProjectsStoreImpl::class)
 class ProjectsStoreImplProjectsTest {

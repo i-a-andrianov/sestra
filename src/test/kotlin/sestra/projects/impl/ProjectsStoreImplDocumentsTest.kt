@@ -17,7 +17,7 @@ import sestra.projects.api.layers.Layer
 import sestra.projects.api.layers.LayerType
 import sestra.projects.api.projects.Project
 
-@DataJpaTest
+@DataJpaTest(properties = [TestContainersPostgres.url])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(ProjectsStoreImpl::class)
 class ProjectsStoreImplDocumentsTest {

@@ -25,7 +25,7 @@ import sestra.projects.api.layers.RelationLayerSpanRole
 import sestra.projects.api.projects.Project
 import java.util.UUID
 
-@DataJpaTest
+@DataJpaTest(properties = [TestContainersPostgres.url])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(ProjectsStoreImpl::class)
 class ProjectsStoreImplAnnotationsTest {

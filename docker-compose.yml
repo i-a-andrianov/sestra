@@ -10,7 +10,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: 'sestra'
       PASSWORD_ADMIN: 'sestra'
   postgres:
-    image: 'postgres:alpine'
+    image: 'postgres:14.2-alpine3.15'
     environment:
         POSTGRES_USER: 'sestra'
         POSTGRES_PASSWORD: 'sestra'
